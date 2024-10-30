@@ -1,2 +1,2 @@
 # groom_frontend
-test repository for groom lecture
+구름 과제 전용 레파지토리
