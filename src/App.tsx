@@ -5,6 +5,7 @@ import styled from 'styled-components';
 import CoinPage from './pages/CoinPage';
 import GlobalStyles from './GlobalStyles';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import AdvertiseBanner from './components/advertisement';
 
 const queryClient = new QueryClient()
 
@@ -18,6 +19,7 @@ function App() {
 
         <Container>
           <Nav/>
+          <AdvertiseBanner/>
           <CoinPage/>
         </Container>
         
@@ -48,7 +50,7 @@ const Container = styled.div`
   flex-direction: column;
   align-items: center;
   & > *:nth-child(2) {
-    margin-top: 3rem;
+    margin-top: 5rem;
   }
 `;
 
