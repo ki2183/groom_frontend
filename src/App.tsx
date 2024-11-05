@@ -2,10 +2,9 @@ import './App.css'
 import Nav from './components/nav';
 import { RecoilRoot } from 'recoil';
 import styled from 'styled-components';
+import CoinPage from './pages/CoinPage';
 import GlobalStyles from './GlobalStyles';
-import ViewCoins from './components/viewCoins';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 
 const queryClient = new QueryClient()
 
@@ -16,13 +15,13 @@ function App() {
      <QueryClientProvider client={queryClient}>
       <RecoilRoot>
         <GlobalStyles/>
+
         <Container>
           <Nav/>
-
-          <ViewCoins/>
+          <CoinPage/>
         </Container>
+        
       </RecoilRoot>
-      <ReactQueryDevtools initialIsOpen={false} />
       </QueryClientProvider>
     </>
   )

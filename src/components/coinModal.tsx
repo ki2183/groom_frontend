@@ -1,34 +1,77 @@
 import styled from "styled-components";
 import useModal from "../store/modalState";
+import useModalDto from "../store/modalDto";
+import NumberHook from "../hooks/numberHook";
+import useInterestState from "../store/interestDto";
 
 function CoinViewModal() {
     const { ModalState, closeModal } = useModal()
+    const { ModalDTOState } = useModalDto()
+    const { addInterestCoin } = useInterestState()
 
-    if (!ModalState) return null
+    if (!ModalState || !ModalDTOState) return null
+
+    const {
+        getDate,
+        getRateColor,
+        getPriceDisplay,
+        getformattedRate,
+      } = NumberHook()
+
+    const {
+        name,
+        symbol,
+        quotes,
+        
+        max_supply,
+        beta_value,
+        last_updated,
+        total_supply,
+        first_data_at,
+        
+    } = ModalDTOState
+
+    const {
+        price,
+        volume_24h,
+        market_cap,
+        market_cap_change_24h,
+        volume_24h_change_24h,
+    } = quotes.KRW
+
+    const OnClickInterest = (e:React.MouseEvent<HTMLButtonElement>) => {
+        e.preventDefault
+        addInterestCoin(ModalDTOState)
+        closeModal()
+    }
 
     return (
         <Backdrop onClick={closeModal}>
             <ModalContent onClick={(e) => e.stopPropagation()}>
                 
-                <Title>BitCoin (BTC) Details</Title>
+                <Title>{name} ({symbol}) Details</Title>
                 <PriceContent>
-
                     <PriceBox>
                         <span>Current Price</span>
-                        <span>₩875050593</span>
+                        <span>₩{getPriceDisplay(price)}</span>
                         <span></span>
                     </PriceBox>
                     <PriceBox>
                         <span>Market Cap</span>
-                        <span>₩48790128492104</span>
-                        <span>+4.61</span>
+                        <span>₩{getPriceDisplay(market_cap)}</span>
+                        <PercentSpan $fontColor={`${getRateColor(market_cap_change_24h)}`}>
+                            {getformattedRate(market_cap_change_24h)}
+                        </PercentSpan>
                     </PriceBox>
                 </PriceContent>
 
                 <PriceBox>
-                        <span>Market Cap</span>
-                        <span>₩48790128492104</span>
-                        <span>+4.61</span>
+                        <span>24H volume</span>
+                        <span>₩{getPriceDisplay(volume_24h)}</span>
+                        <PercentSpan $fontColor={`${getRateColor(volume_24h_change_24h)}`}>
+                            {getformattedRate(volume_24h_change_24h)}
+                        </PercentSpan>
+                        
                 </PriceBox>
 
                 <ETCContents>
@@ -38,28 +81,32 @@ function CoinViewModal() {
                     </ETCBox>
                     <ETCBox>
                         <span>Max Supply</span>
-                        <span>21,000,000</span>
+                        <span>{getPriceDisplay(max_supply)}</span>
                     </ETCBox>
                     <ETCBox>
                         <span>Beta Value</span>
-                        <span>0.958821</span>
+                        <span>{beta_value}</span>
                     </ETCBox>
                     <ETCBox>
                         <span>Total Supply</span>
-                        <span>19,774,659</span>
+                        <span>{getPriceDisplay(total_supply)}</span>
                     </ETCBox>
                 </ETCContents>
 
                 <DateContents>
                     <Datebox>
                         <span>First Data At</span>
-                        <span>2024년 7월 17일 오전 09:00</span>
+                        <span>{getDate(first_data_at)}</span>
                     </Datebox>
                     <Datebox>
                         <span>Last Updated</span>
-                        <span>2024년 8월 24일 오전 09:00</span>
+                        <span>{getDate(last_updated)}</span>
                     </Datebox>
                 </DateContents>
+
+                <AddInterestingButton>
+                    <button onClick={OnClickInterest}>Interesting</button>
+                </AddInterestingButton>
             </ModalContent>
         </Backdrop>
     )
@@ -129,12 +176,12 @@ const PriceBox = styled.div`
     & > span:nth-child(2){
         font-size:1.5rem;
         font-weight: 700;
-    }
-    & > span:nth-child(3){
-        font-size: 0.9rem;
-        color: green;
-    }
-    
+    }   
+`
+
+const PercentSpan = styled.span<{$fontColor:string}>`
+    font-size: 0.9rem;
+    color:${(props)=>props.$fontColor};
 `
 
 const ETCContents = styled.div`
@@ -189,5 +236,24 @@ const Datebox = styled.div`
     }
     & > span:nth-child(2){
         font-size:1rem;
+    }
+`
+
+const AddInterestingButton = styled.div`
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    
+    & > button {
+        padding: 0.3rem 0.7rem 0.3rem 0.7rem;
+        border-radius: 4px;
+        border: none;
+        font-size: 1rem;
+        background-color: #2c2c2cc7;
+        cursor: pointer;
+        color: #e8e8e8;
+    }
+    & > button:hover {
+        color: #b7b7b7;
     }
 `

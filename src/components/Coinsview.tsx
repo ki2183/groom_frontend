@@ -1,11 +1,13 @@
-
+import gsap from "gsap";
+import { useEffect } from "react";
 import styled from "styled-components";
-import getCoinsList, { CryptoData } from "../api/getCoinsList";
-import { useQuery } from "@tanstack/react-query";
-import CoinViewModal from "./modal";
 import useModal from "../store/modalState";
+import useModalDto from "../store/modalDto";
+import NumberHook from "../hooks/numberHook";
+import { useQuery } from "@tanstack/react-query";
+import getCoinsList, { CryptoData } from "../api/getCoinsList";
 
-
+//코인 데이터 가져오기
 const getCoins = async () => {
   try {
     const dto = await getCoinsList();
@@ -16,63 +18,83 @@ const getCoins = async () => {
   }
 }
 
-const ViewCoins = () => {
-
+//반환하는 컴포넌트
+const CoinsView = () => {
   return (
-    <Container>
-
-      <CoinViewModal/>
-      
-      <Title>All coins</Title>
-
-      <CoinsView/>
-
-    </Container>
+    <Coins>
+      <CoinItems/>
+    </Coins>
   )
 }
 
-const CoinsView = () => {
+export default CoinsView
+
+
+//끌어올리기 Coins 리렌더 방지
+export const CoinItems = () => {
+  //데이터 캐싱
   const { data, isSuccess } = useQuery<CryptoData[]>({
     queryKey: ['coins'],
     queryFn: () => getCoins(),
-  });
+  })
+
+
+  useEffect(()=>{
+    if (!isSuccess || data.length <= 0) return
+    //간단한 데이터 업데이트 애니메이션
+    gsap.from('.coinBox', {
+      opacity:0,
+      stagger:0.02,
+      duration: 0.2,
+    })
+
+  },[data])
 
   if (!isSuccess) return <span>로딩중...</span>
 
   return (
-    <Coins>
+    <>
       {data && data?.length > 0 &&
-        data.map((coin) => 
-          <Coin {...coin}/>
-
-        )}
-    </Coins>
-  );
-};
-
-const getColor = (price:number) => price >= 0 ? "#118e11" : "#ef1d1d"
-const getCurPrice = (price:number) => price.toFixed(2)
-
-const getChange24H = (price:number) => {
-  return (price > 0 ? "+" : "-") + Math.abs(price) + "%"
+        data.map((coin, _) => <Coin key={_} {...coin}/>
+      )}
+    </>
+  ) 
 }
 
-const Coin = (props:CryptoData) => {
-  const {id, name, symbol, quotes} = props
+interface ICoin extends CryptoData{
   
+}
+
+//코인 컴포넌트
+export const Coin = (props:ICoin) => {
+  const {id, name, symbol, quotes } = props
   const {price, market_cap_change_24h} = quotes.KRW
 
+  const {
+    getCutPrice,
+    getRateColor,
+    getPriceDisplay,
+    getformattedRate,
+  } = NumberHook()
   const {openModal} = useModal()
+  const {updateModalDTO} = useModalDto()
 
-  const OnClickHandler = () => openModal()
+  const OnClickHandler = (e:React.MouseEvent<HTMLLIElement>) => {
+    e.preventDefault()
+    //현재 데이터 모달 데이터에 저장
+    updateModalDTO(props)
+    //모달 열기
+    openModal()
+  }
+
+  //10000.1111 => 10000.11 => 10,000.11
+  const ComputePrice = (price:number) => getPriceDisplay(Number(getCutPrice(price)))
 
   return (
-    <li key={id} onClick={OnClickHandler}>
+    <li className="coinBox" key={id} onClick={OnClickHandler}>
       <div>
         <ImgFrame>
-          <div>
-            <img src={`https://cryptocurrencyliveprices.com/img/${id}.png`} alt="" />
-          </div>
+          <div><img src={`https://cryptocurrencyliveprices.com/img/${id}.png`} alt="" /></div>
         </ImgFrame>
 
         <InfoFrame>
@@ -82,11 +104,12 @@ const Coin = (props:CryptoData) => {
           </div>
 
           <div className="fc">
-              <CurPrice> ₩{getCurPrice(price)}</CurPrice>
-              <Price24H fontColor={`${getColor(market_cap_change_24h)}`}>
-                {getChange24H(market_cap_change_24h)}
+              <CurPrice> ₩{ComputePrice(price)}</CurPrice>
+              <Price24H $fontColor={`${getRateColor(market_cap_change_24h)}`}>
+                {getformattedRate(market_cap_change_24h)}
               </Price24H>
           </div>
+
         </InfoFrame>
       </div>
       
@@ -95,28 +118,12 @@ const Coin = (props:CryptoData) => {
 
 }
 
-const Container = styled.div`
-  width: 80%;
-  height: 100%;
-  padding-top: 2.5rem;
 
-  gap: 2rem;
-  display: flex;
-  flex-direction: column;
-`;
-
-const Title = styled.span `
-  font-size: 1.5rem;
-  font-family: "Roboto", sans-serif;
-  letter-spacing: -1px;
-  font-weight: 600;
-`
-const Coins = styled.ol`
+export const Coins = styled.ol`
   width: 100%;
   height: auto;
 
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
   grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
   grid-auto-rows: 90px;
   gap: 16px;
@@ -126,6 +133,7 @@ const Coins = styled.ol`
     user-select: none;
     background-color: #80808029;
     border-radius: 8px;
+    box-shadow: 1px 1px 1px #515151a6;
     overflow: hidden;
     & > div {
       box-sizing: border-box;
@@ -194,10 +202,8 @@ const CurPrice = styled.span`
   font-size: 1.1rem;
   font-weight: 800;
 `
-const Price24H = styled.span<{ fontColor: string }>`
-  color: ${(props) => props.fontColor};
+const Price24H = styled.span<{ $fontColor: string }>`
+  color: ${(props) => props.$fontColor};
   font-size: 0.8rem;
   font-weight: 500;
 `;
-  
-export default ViewCoins;

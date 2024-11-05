@@ -1,4 +1,3 @@
-import { useRef } from 'react';
 import { atom, useRecoilState } from 'recoil';
 
 const modalState = atom({
@@ -8,7 +7,6 @@ const modalState = atom({
 
 export default function useModal() {
     const [ModalState, setModalState] = useRecoilState(modalState)
-    
 
     const openModal = () => setModalState(true)
     

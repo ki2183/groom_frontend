@@ -1,5 +1,3 @@
-// import styled from "styled-components";
-
 import styled from "styled-components"
 
 function Nav(){
@@ -7,9 +5,7 @@ function Nav(){
         <Container>
             <Frame>
                 <Title>Coin</Title>
-
                 <Menu/>
-
             </Frame>
         </Container>
     )
