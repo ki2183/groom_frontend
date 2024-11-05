@@ -1,6 +1,6 @@
 import { atom, useRecoilState } from 'recoil';
 import { CryptoData } from '../api/getCoinsList';
-import { DropResult } from 'react-beautiful-dnd';
+import { DropResult } from '@hello-pangea/dnd';
 
 const InterestState = atom<CryptoData[]>({
   key: 'interestState',

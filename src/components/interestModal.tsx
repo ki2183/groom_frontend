@@ -88,12 +88,13 @@ const MyInterestBoxes = (props:IMyInterestBoxes) => {
                                 
                                 //gsap와 absolute 때문에 직접 위치 조정 필요했음...
                                 const LEFT = 15.8
-                                const offsetY = -446.8; 
+                                const TOP = 15.708 + idx * 70
                                 const dragStyle = snapshot.isDragging
                                 ? {
                                     ...(provided.draggableProps.style as any),
                                     left: `${LEFT}px`,
-                                    top: (provided.draggableProps.style as any).top + offsetY || offsetY,
+                                    // top: (provided.draggableProps.style as any).top + offsetY || offsetY,
+                                    top:`${TOP}px`,
                                 }
                                 : provided.draggableProps.style
 
@@ -287,10 +288,15 @@ const S = {
     // position: fixed;
     // width: 280px;
     // top: 462.708px;
-    // left: 516.412px;
+    // left: 15.8px;
     // box-sizing: border-box;
     // height: 60px;
     // transition: transform 0.45s cubic-bezier(0.2, 1, 0.1, 1), opacity 0.45s cubic-bezier(0.2, 1, 0.1, 1);
     // pointer-events: none;
-    // transform: translate(0px, 9.59494px) translate(-100vh, -10px);
+    // transform: translate(0px, 0px);
 // }
+
+
+// 0 15.708px;
+// 1 85.708px;
+// 2 154.708px
