@@ -4,8 +4,9 @@ import { RecoilRoot } from 'recoil';
 import styled from 'styled-components';
 import CoinPage from './pages/CoinPage';
 import GlobalStyles from './GlobalStyles';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import AdvertiseBanner from './components/advertisement';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+
 
 const queryClient = new QueryClient()
 
